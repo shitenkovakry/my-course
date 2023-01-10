@@ -19,7 +19,9 @@ func main() {
 
 	if max < iq2 {
 		max = iq2
-	} else if max < iq3 {
+	} 
+	
+	if max < iq3 {
 		max = iq3
 	}
 
