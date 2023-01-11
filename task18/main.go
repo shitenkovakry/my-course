@@ -3,23 +3,23 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("Введи сколько 100 рублей:")
+	fmt.Println("Введите] сколько 100 рублей:")
 	var rub100 float64
 	fmt.Scan(&rub100)
 
-	fmt.Println("Введи сколько 50 рублей:")
+	fmt.Println("Введите сколько 50 рублей:")
 	var rub50 float64
 	fmt.Scan(&rub50)
 
-	fmt.Println("Введи сколько 20 рублей:")
+	fmt.Println("Введите сколько 20 рублей:")
 	var rub20 float64
 	fmt.Scan(&rub20)
 
-	fmt.Println("Введи сколько 10 рублей:")
+	fmt.Println("Введите сколько 10 рублей:")
 	var rub10 float64
 	fmt.Scan(&rub10)
 
-	fmt.Println("Введи сколько 5 рублей:")
+	fmt.Println("Введите сколько 5 рублей:")
 	var rub5 float64
 	fmt.Scan(&rub5)
 
