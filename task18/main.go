@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("Введите] сколько 100 рублей:")
+	fmt.Println("Введите сколько 100 рублей:")
 	var rub100 float64
 	fmt.Scan(&rub100)
 
