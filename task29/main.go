@@ -19,7 +19,7 @@ func main() {
 	}
 }
 
-func main1() {
+/*func main1() {
 	for number := 0; number <= 10; number++ {
 		if number%2 != 0 {
 			continue
@@ -28,3 +28,4 @@ func main1() {
 		fmt.Println(number, "кратен 2")
 	}
 }
+*/
