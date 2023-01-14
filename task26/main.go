@@ -12,18 +12,11 @@ func main() {
 	fmt.Scan(&powerOf)
 
 	run := 1
-
 	result := 1
 
 	for {
-		if powerOf > 0 && run > powerOf {
+		if run > powerOf {
 			break
-		}
-
-		if powerOf == 0 {
-			result = 1
-
-			run++
 		}
 
 		result *= number
