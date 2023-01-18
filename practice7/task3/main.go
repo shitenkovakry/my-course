@@ -3,9 +3,9 @@ package main
 import "fmt"
 
 func main() {
-	//fmt.Println("Введите высоту елочки:")
-	var height int = 6
-	//fmt.Scan(&height)
+	fmt.Println("Введите высоту елочки:")
+	var height int
+	fmt.Scan(&height)
 
 	for row := 0; row < height; row++ {
 		toPrintRow := ""
