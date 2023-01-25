@@ -7,11 +7,22 @@ import (
 func CountevenNumbers(number1, number2 int) int {
 	summa := 0
 
+	if number1 == number2 {
+		if number1%2 == 0 {
+			return number1
+		}
+	}
+
+	if number1 == number2 {
+		if number1%2 != 0 {
+			return 0
+		}
+	}
+
 	for i := number1; i <= number2; i++ {
 		if i%2 == 0 {
 			summa += i
 		}
-
 	}
 
 	for i := number1; i >= number2; i-- {

@@ -45,3 +45,23 @@ func Test_Case4(t *testing.T) {
 
 	assert.Equal(t, expected, actual)
 }
+
+func Test_Case5(t *testing.T) {
+	number1 := 100
+	number2 := 100
+
+	expected := 100
+	actual := CountevenNumbers(number1, number2)
+
+	assert.Equal(t, expected, actual)
+}
+
+func Test_Case6(t *testing.T) {
+	number1 := 99
+	number2 := 99
+
+	expected := 0
+	actual := CountevenNumbers(number1, number2)
+
+	assert.Equal(t, expected, actual)
+}
