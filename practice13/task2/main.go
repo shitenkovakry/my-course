@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	log "github.com/sirupsen/logrus"
+)
 
 func Swap(a *int, b *int) {
 	*a, *b = *b, *a
@@ -12,5 +14,5 @@ func main() {
 
 	Swap(&x, &y)
 
-	fmt.Println(x, y)
+	log.Info(x, y)
 }
