@@ -1,23 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-func FindNumberFromArray(array []int, value int) int {
+var (
+	ErrNoResult = errors.New("нет числа в массиве")
+)
 
+func FindNumberFromArray(array []int, value int) (int, error) {
 	for i := 0; i < len(array); i++ {
-		if array[i] == value {
-			return array[i]
+		valueFromArray := array[i]
+
+		if valueFromArray == value {
+			return valueFromArray, nil
 		}
 	}
 
-	return value
+	return 0, ErrNoResult
 }
 
 func main() {
 	array := []int{5, 9, 1, 2}
-	value := 1
+	value := 6
 
-	result := FindNumberFromArray(array, value)
+	result, err := FindNumberFromArray(array, value)
+	if err != nil {
+		fmt.Println("нет числа в массиве")
+
+		return
+	}
 
 	fmt.Println(result)
 }
