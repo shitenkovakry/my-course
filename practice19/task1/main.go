@@ -1,6 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
+
+func BubbleSort(mergedArray []int) []int {
+	bubbledArray := []int{}
+
+	for _, value := range mergedArray {
+		bubbledArray = append(bubbledArray, value)
+	}
+
+	for i := 0; i < len(bubbledArray)-1; i++ {
+		start := &bubbledArray[i]
+		end := &bubbledArray[i+1]
+
+		if *start > *end {
+			*start, *end = *end, *start
+			i = -1
+		}
+	}
+
+	return bubbledArray
+}
 
 func MergerArrays(array []int, array2 []int) []int {
 	mergedArray := []int{}
@@ -13,12 +35,15 @@ func MergerArrays(array []int, array2 []int) []int {
 		mergedArray = append(mergedArray, array2[i])
 	}
 
-	return mergedArray
+	result := BubbleSort(mergedArray)
+
+	return result
+
 }
 
 func main() {
-	array := []int{1, 2, 3, 4, 5}
-	array2 := []int{6, 7, 8, 9, 10}
+	array := []int{1, 5, 8, 9}
+	array2 := []int{2, 3, 6, 7, 9}
 
 	result := MergerArrays(array, array2)
 
