@@ -1,0 +1,32 @@
+[
+    {
+        "id": 3,
+        "name": "Ked 1",
+        "age": 39,
+        "friends": []
+    },
+    {
+        "id": 4,
+        "name": "Ked 2",
+        "age": 39,
+        "friends": []
+    },
+    {
+        "id": 12,
+        "name": "Ked 3",
+        "age": 39,
+        "friends": []
+    },
+    {
+        "id": 33,
+        "name": "Ked Bob",
+        "age": 39,
+        "friends": [4, 3, 12]
+    },
+    {
+        "id": 13,
+        "name": "Ked 4",
+        "age": 39,
+        "friends": []
+    }
+]

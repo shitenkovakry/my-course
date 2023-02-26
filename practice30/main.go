@@ -29,8 +29,8 @@ func main() {
 	handlerDeleteUser := &HandlerDeleteUser{logger}
 	router.Method(http.MethodDelete, "/user", handlerDeleteUser)
 
-	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{}
-	router.Method(http.MethodGet, "/friends/user_id", handlerReturnAllFriendsID)
+	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{logger}
+	router.Method(http.MethodGet, "/friends/{user_id}", handlerReturnAllFriendsID)
 
 	server := &http.Server{
 		Addr:    ":8080",
