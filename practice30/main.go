@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/go-chi/chi"
 )
 
 type Logger interface {
@@ -11,24 +13,24 @@ type Logger interface {
 }
 
 func main() {
-	router := http.NewServeMux()
+	router := chi.NewRouter()
 
 	logger := log.New(os.Stdout, "practice30", log.Flags())
 
 	handlerUpdateUserAge := &HandlerUpdateUserAge{logger}
-	router.Handle("/user_id", handlerUpdateUserAge)
+	router.Method(http.MethodPut, "/user_id", handlerUpdateUserAge)
 
 	handlerCreateUser := &HandlerCreateUser{logger}
-	router.Handle("/create", handlerCreateUser)
+	router.Method(http.MethodPost, "/create", handlerCreateUser)
 
 	handlerMakeFriends := &HandlerMakeFriends{logger}
-	router.Handle("/make_friends", handlerMakeFriends)
+	router.Method(http.MethodPost, "/make_friends", handlerMakeFriends)
 
 	handlerDeleteUser := &HandlerDeleteUser{logger}
-	router.Handle("/user", handlerDeleteUser)
+	router.Method(http.MethodDelete, "/user", handlerDeleteUser)
 
 	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{}
-	router.Handle("/friends/user_id", handlerReturnAllFriendsID)
+	router.Method(http.MethodGet, "/friends/user_id", handlerReturnAllFriendsID)
 
 	server := &http.Server{
 		Addr:    ":8080",
