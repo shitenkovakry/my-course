@@ -2,6 +2,15 @@ package main
 
 import "net/http"
 
+type User struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Age     int    `json:"age"`
+	Friends []int  `json:"friends"`
+}
+
+type Users []*User
+
 type HandlerUpdateUserAge struct {
 	log Logger
 }
