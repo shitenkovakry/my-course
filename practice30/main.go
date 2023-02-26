@@ -1,60 +1,30 @@
 package main
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+	"os"
+)
 
-type HandlerUpdateUserAge struct{}
-
-func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(`{"new age":"28"}`)); err != nil {
-		panic(err)
-	}
-}
-
-type HandlerCreateUser struct{}
-
-func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(`{"name":"some name","age":"24","friends":[]}`)); err != nil {
-		panic(err)
-	}
-}
-
-type HandlerMakeFriends struct{}
-
-func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(`{"source_id":"1","target_id":"2"}`)); err != nil {
-		panic(err)
-	}
-}
-
-type HandlerDeleteUser struct{}
-
-func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(`{"target_id":"1"}`)); err != nil {
-		panic(err)
-	}
-}
-
-type HandlerReturnAllFriendsID struct{}
-
-func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(``)); err != nil {
-		panic(err)
-	}
+type Logger interface {
+	Printf(format string, v ...any)
 }
 
 func main() {
 	router := http.NewServeMux()
 
-	handlerUpdateUserAge := &HandlerUpdateUserAge{}
+	logger := log.New(os.Stdout, "practice30", log.Flags())
+
+	handlerUpdateUserAge := &HandlerUpdateUserAge{logger}
 	router.Handle("/user_id", handlerUpdateUserAge)
 
-	handlerCreateUser := &HandlerCreateUser{}
+	handlerCreateUser := &HandlerCreateUser{logger}
 	router.Handle("/create", handlerCreateUser)
 
-	handlerMakeFriends := &HandlerMakeFriends{}
+	handlerMakeFriends := &HandlerMakeFriends{logger}
 	router.Handle("/make_friends", handlerMakeFriends)
 
-	handlerDeleteUser := &HandlerDeleteUser{}
+	handlerDeleteUser := &HandlerDeleteUser{logger}
 	router.Handle("/user", handlerDeleteUser)
 
 	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{}
