@@ -12,12 +12,6 @@ type HandlerCreateUser struct {
 }
 
 func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	/*
-		if _, err := writer.Write([]byte(`{"email":"my@mail.ru","name":"some name","age":"24","friends":[]}`)); err != nil {
-			handler.log.Printf("err = %v", err)
-		}
-	*/
-
 	var (
 		allUsersInDB Users
 		newUser      *User
@@ -62,8 +56,8 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 			return
 		}
 
-		if nextID < newUser.ID {
-			nextID = newUser.ID
+		if nextID < user.ID {
+			nextID = user.ID
 		}
 	}
 
@@ -86,7 +80,7 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	response, err := json.Marshal(newUser)
+	response, err := json.Marshal(newUser.ID)
 	if err != nil {
 		handler.log.Printf("cannot marshal newUser")
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -97,4 +91,6 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 	if _, err := writer.Write(response); err != nil {
 		handler.log.Printf("err = %v", err)
 	}
+
+	writer.WriteHeader(http.StatusCreated)
 }
