@@ -8,24 +8,6 @@ import (
 	"os"
 )
 
-func FindUserByID(allUsersInDB Users, id int) (*User, error) {
-	for i := 0; i <= len(allUsersInDB); i++ {
-		user := allUsersInDB[i]
-
-		if user.ID == id {
-			return user, nil
-		}
-	}
-
-	return nil, ErrNotFound
-}
-
-func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if _, err := writer.Write([]byte(`{"new age":"28"}`)); err != nil {
-		handler.log.Printf("err = %v", err)
-	}
-}
-
 type HandlerMakeFriends struct {
 	log Logger
 }
