@@ -17,9 +17,6 @@ func main() {
 
 	logger := log.New(os.Stdout, "practice30", log.Flags())
 
-	handlerUpdateUserAge := &HandlerUpdateUserAge{logger}
-	router.Method(http.MethodPut, "/user_id", handlerUpdateUserAge)
-
 	handlerCreateUser := &HandlerCreateUser{logger}
 	router.Method(http.MethodPost, "/create", handlerCreateUser)
 
@@ -31,6 +28,9 @@ func main() {
 
 	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{logger}
 	router.Method(http.MethodGet, "/friends/{user_id}", handlerReturnAllFriendsID)
+
+	handlerUpdateUserAge := &HandlerUpdateUserAge{logger}
+	router.Method(http.MethodPut, "/{user_id}", handlerUpdateUserAge)
 
 	server := &http.Server{
 		Addr:    ":8080",
