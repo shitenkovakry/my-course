@@ -1,1 +1,20 @@
-[{"id":3,"email":"","name":"Ked 1","age":39,"friends":[]},{"id":33,"email":"yaked@mail.ru","name":"Ked Bob","age":39,"friends":[4,3,12,34]},{"id":13,"email":"miauuu@mail.ru","name":"Ked 4","age":39,"friends":[]},{"id":34,"email":"kuzia@mail.ru","name":"some name","age":24,"friends":[33]}]
+[
+    {
+        "id": 13,
+        "email": "miauuu@mail.ru",
+        "name": "Ked 4",
+        "age": 39,
+        "friends": [
+            34
+        ]
+    },
+    {
+        "id": 34,
+        "email": "kuzia@mail.ru",
+        "name": "some name",
+        "age": 24,
+        "friends": [
+            13
+        ]
+    }
+]

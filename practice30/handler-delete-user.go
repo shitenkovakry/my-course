@@ -24,6 +24,30 @@ func DeleteUser(allUsersInDB Users, id int) Users {
 	return newArray
 }
 
+func DeleteUserFromFriends(allUsersInDB Users, id int) Users {
+	newArrayOfFriends := Users{}
+
+	for i := 0; i < len(allUsersInDB); i++ {
+		user := allUsersInDB[i]
+		arrayOfFriendsOfUser := []int{}
+
+		for j := 0; j < len(user.Friends); j++ {
+			friendID := user.Friends[j]
+
+			if friendID != id {
+				arrayOfFriendsOfUser = append(arrayOfFriendsOfUser, friendID)
+			} else if friendID == id {
+				continue
+			}
+		}
+
+		user.Friends = arrayOfFriendsOfUser
+		newArrayOfFriends = append(newArrayOfFriends, user)
+	}
+
+	return newArrayOfFriends
+}
+
 type HandlerDeleteUser struct {
 	log Logger
 }
@@ -73,8 +97,9 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 	}
 
 	allUsersInDBWithoutDeletedUser := DeleteUser(allUsersInDB, userDeleted.ID)
+	allFriendsWithoutDeletedUser := DeleteUserFromFriends(allUsersInDBWithoutDeletedUser, userDeleted.ID)
 
-	dataWriteAllUsersInDB, err := json.Marshal(allUsersInDBWithoutDeletedUser)
+	dataWriteAllUsersInDB, err := json.Marshal(allFriendsWithoutDeletedUser)
 	if err != nil {
 		handler.log.Printf("cannot marshal allUsersInDB")
 		writer.WriteHeader(http.StatusInternalServerError)
