@@ -1,8 +1,12 @@
-package main
+package handlers
 
 import (
 	"errors"
 )
+
+type Logger interface {
+	Printf(format string, v ...any)
+}
 
 type User struct {
 	ID      int    `json:"id"`

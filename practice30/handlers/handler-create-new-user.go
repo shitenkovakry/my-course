@@ -1,21 +1,28 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
 
-type HandlerMakeFriends struct {
+type HandlerCreateUser struct {
 	log Logger
 }
 
-func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func NewHandlerCreateUser(log Logger) *HandlerCreateUser {
+	h := &HandlerCreateUser{
+		log: log,
+	}
+
+	return h
+}
+
+func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
-		makeNewFriend *MakeNewFriendInfo
-		allUsersInDB  Users
+		allUsersInDB Users
+		newUser      *User
 	)
 
 	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
@@ -41,31 +48,30 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		return
 	}
 
-	if err := json.Unmarshal(body, &makeNewFriend); err != nil {
+	if err := json.Unmarshal(body, &newUser); err != nil {
 		handler.log.Printf("cannot unmarshal body", string(body))
 		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
 
-	sourceUser, err := FindUserByID(allUsersInDB, makeNewFriend.SourceID)
-	if err != nil {
-		handler.log.Printf("cannot find user %d", makeNewFriend.SourceID)
-		writer.WriteHeader(http.StatusBadRequest)
+	nextID := 0
+	for _, user := range allUsersInDB {
+		if newUser.Email == user.Email {
+			handler.log.Printf("user have created = %d", newUser.ID)
+			writer.WriteHeader(http.StatusInternalServerError)
 
-		return
+			return
+		}
+
+		if nextID < user.ID {
+			nextID = user.ID
+		}
 	}
 
-	targetUser, err := FindUserByID(allUsersInDB, makeNewFriend.TargetID)
-	if err != nil {
-		handler.log.Printf("cannot find user %d", makeNewFriend.TargetID)
-		writer.WriteHeader(http.StatusBadRequest)
+	newUser.ID = nextID + 1
 
-		return
-	}
-
-	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
-	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
+	allUsersInDB = append(allUsersInDB, newUser)
 
 	dataWriteAllUsersInDB, err := json.Marshal(allUsersInDB)
 	if err != nil {
@@ -82,9 +88,17 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		return
 	}
 
-	response := fmt.Sprintf("%s and %s are friends now", sourceUser.Name, targetUser.Name)
+	response, err := json.Marshal(newUser.ID)
+	if err != nil {
+		handler.log.Printf("cannot marshal newUser")
+		writer.WriteHeader(http.StatusInternalServerError)
 
-	if _, err := writer.Write([]byte(response)); err != nil {
+		return
+	}
+
+	if _, err := writer.Write(response); err != nil {
 		handler.log.Printf("err = %v", err)
 	}
+
+	writer.WriteHeader(http.StatusCreated)
 }

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -11,6 +11,12 @@ import (
 
 type HandlerReturnAllFriendsID struct {
 	log Logger
+}
+
+func NewHandlerReturnAllFriendsID(log Logger) *HandlerReturnAllFriendsID {
+	return &HandlerReturnAllFriendsID{
+		log: log,
+	}
 }
 
 func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

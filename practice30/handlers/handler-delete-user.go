@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -50,6 +50,12 @@ func DeleteUserFromFriends(allUsersInDB Users, id int) Users {
 
 type HandlerDeleteUser struct {
 	log Logger
+}
+
+func NewHandlerDeleteUser(log Logger) *HandlerDeleteUser {
+	return &HandlerDeleteUser{
+		log: log,
+	}
 }
 
 func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -28,6 +28,12 @@ func UpdateAgeOfUser(allUsersInDB Users, id int, age int) Users {
 
 type HandlerUpdateUserAge struct {
 	log Logger
+}
+
+func NewHandlerUpdateUserAge(log Logger) *HandlerUpdateUserAge {
+	return &HandlerUpdateUserAge{
+		log: log,
+	}
 }
 
 func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

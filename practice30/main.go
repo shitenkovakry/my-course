@@ -6,36 +6,38 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
-)
 
-type Logger interface {
-	Printf(format string, v ...any)
-}
+	"curse/practice30/handlers"
+)
 
 func main() {
 	router := chi.NewRouter()
 
 	logger := log.New(os.Stdout, "practice30", log.Flags())
 
-	handlerCreateUser := &HandlerCreateUser{logger}
+	logger.Print("durik nachinaet")
+
+	handlerCreateUser := handlers.NewHandlerCreateUser(logger)
 	router.Method(http.MethodPost, "/create", handlerCreateUser)
 
-	handlerMakeFriends := &HandlerMakeFriends{logger}
+	handlerMakeFriends := handlers.NewHandlerMakeFriends(logger)
 	router.Method(http.MethodPost, "/make_friends", handlerMakeFriends)
 
-	handlerDeleteUser := &HandlerDeleteUser{logger}
+	handlerDeleteUser := handlers.NewHandlerDeleteUser(logger)
 	router.Method(http.MethodDelete, "/user", handlerDeleteUser)
 
-	handlerReturnAllFriendsID := &HandlerReturnAllFriendsID{logger}
+	handlerReturnAllFriendsID := handlers.NewHandlerReturnAllFriendsID(logger)
 	router.Method(http.MethodGet, "/friends/{user_id}", handlerReturnAllFriendsID)
 
-	handlerUpdateUserAge := &HandlerUpdateUserAge{logger}
+	handlerUpdateUserAge := handlers.NewHandlerUpdateUserAge(logger)
 	router.Method(http.MethodPut, "/{user_id}", handlerUpdateUserAge)
 
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
+
+	log.Print("serving at :8080")
 
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
