@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
+	"os"
 )
 
 type Logger interface {
@@ -45,4 +47,32 @@ func FindUserByID(allUsersInDB Users, id int) (*User, error) {
 	}
 
 	return nil, ErrNotFound
+}
+
+func ReadAllUsers() (Users, error) {
+	var allUsersInDB Users
+
+	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(dataReadAllUsersInDB, &allUsersInDB); err != nil {
+		return nil, err
+	}
+
+	return allUsersInDB, nil
+}
+
+func SaveResultIntoFile(result Users) error {
+	dataWriteAllUsersInDB, err := json.Marshal(result)
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile("./database.json", dataWriteAllUsersInDB, os.ModePerm); err != nil {
+		return err
+	}
+
+	return nil
 }

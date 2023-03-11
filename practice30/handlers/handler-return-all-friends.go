@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/go-chi/chi"
@@ -30,19 +29,10 @@ func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, 
 		return
 	}
 
-	data, err := os.ReadFile("./database.json")
+	allUsersInDB, err := ReadAllUsers()
 	if err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	var allUsersInDB Users
-
-	if err := json.Unmarshal(data, &allUsersInDB); err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
+		handler.log.Printf("cannot unmarshal: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 )
 
 type HandlerMakeFriends struct {
@@ -21,20 +20,12 @@ func NewHandlerMakeFriends(log Logger) *HandlerMakeFriends {
 func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
 		makeNewFriend *MakeNewFriendInfo
-		allUsersInDB  Users
 	)
 
-	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
+	allUsersInDB, err := ReadAllUsers()
 	if err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := json.Unmarshal(dataReadAllUsersInDB, &allUsersInDB); err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
+		handler.log.Printf("cannot unmarshal: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
@@ -73,16 +64,8 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
 	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
 
-	dataWriteAllUsersInDB, err := json.Marshal(allUsersInDB)
-	if err != nil {
-		handler.log.Printf("cannot marshal allUsersInDB")
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := os.WriteFile("./database.json", dataWriteAllUsersInDB, os.ModePerm); err != nil {
-		handler.log.Printf("cannot write allUsersInDB in file")
+	if err := SaveResultIntoFile(allUsersInDB); err != nil {
+		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return

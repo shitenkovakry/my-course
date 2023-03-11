@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/go-chi/chi"
@@ -39,7 +38,6 @@ func NewHandlerUpdateUserAge(log Logger) *HandlerUpdateUserAge {
 func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
 		infoOfUpdateUser *UpdateAgeInfo
-		allUsersInDB     Users
 	)
 
 	userIDParam := chi.URLParam(request, "user_id")
@@ -52,17 +50,10 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 		return
 	}
 
-	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
+	allUsersInDB, err := ReadAllUsers()
 	if err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := json.Unmarshal(dataReadAllUsersInDB, &allUsersInDB); err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
+		handler.log.Printf("cannot unmarshal: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
@@ -94,16 +85,8 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 
 	updatedUsers := UpdateAgeOfUser(allUsersInDB, userWhoseAgeShouldBeUpdate.ID, infoOfUpdateUser.Age)
 
-	dataWriteAllUsersInDB, err := json.Marshal(updatedUsers)
-	if err != nil {
-		handler.log.Printf("cannot marshal allUsersInDB")
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := os.WriteFile("./database.json", dataWriteAllUsersInDB, os.ModePerm); err != nil {
-		handler.log.Printf("cannot write allUsersInDB in file")
+	if err := SaveResultIntoFile(updatedUsers); err != nil {
+		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return

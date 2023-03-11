@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 )
 
 type HandlerCreateUser struct {
@@ -21,21 +20,13 @@ func NewHandlerCreateUser(log Logger) *HandlerCreateUser {
 
 func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
-		allUsersInDB Users
-		newUser      *User
+		newUser *User
 	)
 
-	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
+	allUsersInDB, err := ReadAllUsers()
 	if err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := json.Unmarshal(dataReadAllUsersInDB, &allUsersInDB); err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
+		handler.log.Printf("cannot unmarshal: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
@@ -72,17 +63,8 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 	newUser.ID = nextID + 1
 
 	allUsersInDB = append(allUsersInDB, newUser)
-
-	dataWriteAllUsersInDB, err := json.Marshal(allUsersInDB)
-	if err != nil {
-		handler.log.Printf("cannot marshal allUsersInDB")
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := os.WriteFile("./database.json", dataWriteAllUsersInDB, os.ModePerm); err != nil {
-		handler.log.Printf("cannot write allUsersInDB in file")
+	if err := SaveResultIntoFile(allUsersInDB); err != nil {
+		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return
@@ -90,7 +72,7 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 
 	response, err := json.Marshal(newUser.ID)
 	if err != nil {
-		handler.log.Printf("cannot marshal newUser")
+		handler.log.Printf("cannot marshal newUser: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return

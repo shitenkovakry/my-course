@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 )
 
 func DeleteUser(allUsersInDB Users, id int) Users {
@@ -60,21 +59,13 @@ func NewHandlerDeleteUser(log Logger) *HandlerDeleteUser {
 
 func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
-		deleteUser   *DeleteUserInfo
-		allUsersInDB Users
+		deleteUser *DeleteUserInfo
 	)
 
-	dataReadAllUsersInDB, err := os.ReadFile("./database.json")
+	allUsersInDB, err := ReadAllUsers()
 	if err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := json.Unmarshal(dataReadAllUsersInDB, &allUsersInDB); err != nil {
-		handler.log.Printf("err = %v", err)
-		writer.WriteHeader(http.StatusInternalServerError)
+		handler.log.Printf("cannot unmarshal: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
@@ -105,16 +96,8 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 	allUsersInDBWithoutDeletedUser := DeleteUser(allUsersInDB, userDeleted.ID)
 	allFriendsWithoutDeletedUser := DeleteUserFromFriends(allUsersInDBWithoutDeletedUser, userDeleted.ID)
 
-	dataWriteAllUsersInDB, err := json.Marshal(allFriendsWithoutDeletedUser)
-	if err != nil {
-		handler.log.Printf("cannot marshal allUsersInDB")
-		writer.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if err := os.WriteFile("./database.json", dataWriteAllUsersInDB, os.ModePerm); err != nil {
-		handler.log.Printf("cannot write allUsersInDB in file")
+	if err := SaveResultIntoFile(allFriendsWithoutDeletedUser); err != nil {
+		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return
