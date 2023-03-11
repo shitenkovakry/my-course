@@ -85,16 +85,13 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	userDeleted, err := FindUserByID(allUsersInDB, deleteUser.ID)
+	allFriendsWithoutDeletedUser, err := UserDeletionResult(allUsersInDB, deleteUser.ID)
 	if err != nil {
-		handler.log.Printf("cannot find user %d", deleteUser.ID)
+		handler.log.Printf("cannot delete user: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
-
-	allUsersInDBWithoutDeletedUser := DeleteUser(allUsersInDB, userDeleted.ID)
-	allFriendsWithoutDeletedUser := DeleteUserFromFriends(allUsersInDBWithoutDeletedUser, userDeleted.ID)
 
 	if err := SaveResultIntoFile(allFriendsWithoutDeletedUser); err != nil {
 		handler.log.Printf("cannot save: %v", err)
@@ -103,7 +100,7 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	response, err := json.Marshal(userDeleted.ID)
+	response, err := json.Marshal(deleteUser.ID)
 	if err != nil {
 		handler.log.Printf("cannot marshal userDeleted")
 		writer.WriteHeader(http.StatusInternalServerError)

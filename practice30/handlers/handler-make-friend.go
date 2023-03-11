@@ -45,24 +45,13 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		return
 	}
 
-	sourceUser, err := FindUserByID(allUsersInDB, makeNewFriend.SourceID)
+	sourceUser, targetUser, err := MakeFriendsForSourceUserAndTargetUser(allUsersInDB, makeNewFriend.SourceID, makeNewFriend.TargetID)
 	if err != nil {
-		handler.log.Printf("cannot find user %d", makeNewFriend.SourceID)
+		handler.log.Printf("cannot make friends for user: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
-
-	targetUser, err := FindUserByID(allUsersInDB, makeNewFriend.TargetID)
-	if err != nil {
-		handler.log.Printf("cannot find user %d", makeNewFriend.TargetID)
-		writer.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
-
-	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
-	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
 
 	if err := SaveResultIntoFile(allUsersInDB); err != nil {
 		handler.log.Printf("cannot save: %v", err)

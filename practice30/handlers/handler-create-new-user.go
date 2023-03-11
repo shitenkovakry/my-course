@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 type HandlerCreateUser struct {
@@ -16,6 +18,25 @@ func NewHandlerCreateUser(log Logger) *HandlerCreateUser {
 	}
 
 	return h
+}
+
+func CreateNewUser(allUsersInDB Users, newUser *User) (Users, error) {
+	nextID := 0
+	for _, user := range allUsersInDB {
+		if newUser.Email == user.Email {
+			return nil, errors.Wrapf(ErrAlready, "in db email = %s", newUser.Email)
+		}
+
+		if nextID < user.ID {
+			nextID = user.ID
+		}
+	}
+
+	newUser.ID = nextID + 1
+
+	allUsersInDB = append(allUsersInDB, newUser)
+
+	return allUsersInDB, nil
 }
 
 func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -46,24 +67,15 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	nextID := 0
-	for _, user := range allUsersInDB {
-		if newUser.Email == user.Email {
-			handler.log.Printf("user have created = %d", newUser.ID)
-			writer.WriteHeader(http.StatusInternalServerError)
+	usersInDBWithNewUser, err := CreateNewUser(allUsersInDB, newUser)
+	if err != nil {
+		handler.log.Printf("cannot create new user:, %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
 
-			return
-		}
-
-		if nextID < user.ID {
-			nextID = user.ID
-		}
+		return
 	}
 
-	newUser.ID = nextID + 1
-
-	allUsersInDB = append(allUsersInDB, newUser)
-	if err := SaveResultIntoFile(allUsersInDB); err != nil {
+	if err := SaveResultIntoFile(usersInDBWithNewUser); err != nil {
 		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 

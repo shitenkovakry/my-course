@@ -73,17 +73,13 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 		return
 	}
 
-	userWhoseAgeShouldBeUpdate, err := FindUserByID(allUsersInDB, userID)
+	updatedUsers, err := UpdateUsersInDBWithGivenUserByAge(allUsersInDB, userID, infoOfUpdateUser.Age)
 	if err != nil {
-		if err != nil {
-			handler.log.Printf("cannot find user %d", userID)
-			writer.WriteHeader(http.StatusBadRequest)
+		handler.log.Printf("cannot update: %v", err)
+		writer.WriteHeader(http.StatusInternalServerError)
 
-			return
-		}
+		return
 	}
-
-	updatedUsers := UpdateAgeOfUser(allUsersInDB, userWhoseAgeShouldBeUpdate.ID, infoOfUpdateUser.Age)
 
 	if err := SaveResultIntoFile(updatedUsers); err != nil {
 		handler.log.Printf("cannot save: %v", err)

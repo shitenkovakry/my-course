@@ -35,6 +35,7 @@ type UpdateAgeInfo struct {
 
 var (
 	ErrNotFound = errors.New("not found")
+	ErrAlready  = errors.New("already")
 )
 
 func FindUserByID(allUsersInDB Users, id int) (*User, error) {
@@ -75,4 +76,44 @@ func SaveResultIntoFile(result Users) error {
 	}
 
 	return nil
+}
+
+func UpdateUsersInDBWithGivenUserByAge(allUsersInDB Users, userID, age int) (Users, error) {
+	userWhoseAgeShouldBeUpdate, err := FindUserByID(allUsersInDB, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedUsers := UpdateAgeOfUser(allUsersInDB, userWhoseAgeShouldBeUpdate.ID, age)
+
+	return updatedUsers, nil
+}
+
+func MakeFriendsForSourceUserAndTargetUser(allUsersInDB Users, sourceID int, tergetID int) (*User, *User, error) {
+	sourceUser, err := FindUserByID(allUsersInDB, sourceID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	targetUser, err := FindUserByID(allUsersInDB, tergetID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
+	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
+
+	return sourceUser, targetUser, nil
+}
+
+func UserDeletionResult(allUsersInDB Users, idOfDeletUser int) (Users, error) {
+	userDeleted, err := FindUserByID(allUsersInDB, idOfDeletUser)
+	if err != nil {
+		return nil, err
+	}
+
+	allUsersInDBWithoutDeletedUser := DeleteUser(allUsersInDB, userDeleted.ID)
+	allFriendsWithoutDeletedUser := DeleteUserFromFriends(allUsersInDBWithoutDeletedUser, userDeleted.ID)
+
+	return allFriendsWithoutDeletedUser, nil
 }
