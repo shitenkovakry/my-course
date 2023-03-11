@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"curse/practice30/datasource"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,21 +10,6 @@ import (
 
 	"github.com/go-chi/chi"
 )
-
-func UpdateAgeOfUser(allUsersInDB Users, id int, age int) Users {
-	newArray := Users{}
-	for i := 0; i < len(allUsersInDB); i++ {
-		user := allUsersInDB[i]
-
-		if user.ID == id {
-			user.Age = age
-		}
-
-		newArray = append(newArray, user)
-	}
-
-	return newArray
-}
 
 type HandlerUpdateUserAge struct {
 	log Logger
@@ -50,7 +36,7 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 		return
 	}
 
-	allUsersInDB, err := ReadAllUsers()
+	allUsersInDB, err := datasource.ReadAllUsers()
 	if err != nil {
 		handler.log.Printf("cannot unmarshal: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -73,7 +59,7 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 		return
 	}
 
-	updatedUsers, err := UpdateUsersInDBWithGivenUserByAge(allUsersInDB, userID, infoOfUpdateUser.Age)
+	updatedUsers, err := datasource.UpdateUsersInDBWithGivenUserByAge(allUsersInDB, userID, infoOfUpdateUser.Age)
 	if err != nil {
 		handler.log.Printf("cannot update: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -81,7 +67,7 @@ func (handler *HandlerUpdateUserAge) ServeHTTP(writer http.ResponseWriter, reque
 		return
 	}
 
-	if err := SaveResultIntoFile(updatedUsers); err != nil {
+	if err := datasource.SaveResultIntoFile(updatedUsers); err != nil {
 		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 

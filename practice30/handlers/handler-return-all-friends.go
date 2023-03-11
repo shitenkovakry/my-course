@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"curse/practice30/datasource"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -18,36 +19,6 @@ func NewHandlerReturnAllFriendsID(log Logger) *HandlerReturnAllFriendsID {
 	}
 }
 
-func FindAllFrindsByUserID(allUsersInDB Users, userID int) (Users, error) {
-	var foundUser *User
-
-	for _, user := range allUsersInDB {
-		if user.ID == userID {
-			foundUser = user
-
-			break
-		}
-	}
-
-	if foundUser == nil {
-		return nil, ErrNotFound
-	}
-
-	foundFriends := Users{}
-
-	for _, userID := range foundUser.Friends {
-		for _, user := range allUsersInDB {
-			if user.ID == userID {
-				foundFriends = append(foundFriends, user)
-
-				break
-			}
-		}
-	}
-
-	return foundFriends, nil
-}
-
 func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	userIDParam := chi.URLParam(request, "user_id")
 	userID, err := strconv.Atoi(userIDParam)
@@ -59,7 +30,7 @@ func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, 
 		return
 	}
 
-	allUsersInDB, err := ReadAllUsers()
+	allUsersInDB, err := datasource.ReadAllUsers()
 	if err != nil {
 		handler.log.Printf("cannot unmarshal: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -67,7 +38,7 @@ func (handler *HandlerReturnAllFriendsID) ServeHTTP(writer http.ResponseWriter, 
 		return
 	}
 
-	foundFriends, err := FindAllFrindsByUserID(allUsersInDB, userID)
+	foundFriends, err := datasource.FindAllFrindsByUserID(allUsersInDB, userID)
 	if err != nil {
 		handler.log.Printf("cannot find friends: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)

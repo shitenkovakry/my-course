@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"curse/practice30/datasource"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,7 +23,7 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		makeNewFriend *MakeNewFriendInfo
 	)
 
-	allUsersInDB, err := ReadAllUsers()
+	allUsersInDB, err := datasource.ReadAllUsers()
 	if err != nil {
 		handler.log.Printf("cannot unmarshal: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -45,7 +46,7 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		return
 	}
 
-	sourceUser, targetUser, err := MakeFriendsForSourceUserAndTargetUser(allUsersInDB, makeNewFriend.SourceID, makeNewFriend.TargetID)
+	sourceUser, targetUser, err := datasource.MakeFriendsForSourceUserAndTargetUser(allUsersInDB, makeNewFriend.SourceID, makeNewFriend.TargetID)
 	if err != nil {
 		handler.log.Printf("cannot make friends for user: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -53,7 +54,7 @@ func (handler *HandlerMakeFriends) ServeHTTP(writer http.ResponseWriter, request
 		return
 	}
 
-	if err := SaveResultIntoFile(allUsersInDB); err != nil {
+	if err := datasource.SaveResultIntoFile(allUsersInDB); err != nil {
 		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 

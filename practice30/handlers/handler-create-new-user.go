@@ -1,11 +1,10 @@
 package handlers
 
 import (
+	"curse/practice30/datasource"
 	"encoding/json"
 	"io"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 type HandlerCreateUser struct {
@@ -20,31 +19,12 @@ func NewHandlerCreateUser(log Logger) *HandlerCreateUser {
 	return h
 }
 
-func CreateNewUser(allUsersInDB Users, newUser *User) (Users, error) {
-	nextID := 0
-	for _, user := range allUsersInDB {
-		if newUser.Email == user.Email {
-			return nil, errors.Wrapf(ErrAlready, "in db email = %s", newUser.Email)
-		}
-
-		if nextID < user.ID {
-			nextID = user.ID
-		}
-	}
-
-	newUser.ID = nextID + 1
-
-	allUsersInDB = append(allUsersInDB, newUser)
-
-	return allUsersInDB, nil
-}
-
 func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	var (
-		newUser *User
+		newUser *datasource.User
 	)
 
-	allUsersInDB, err := ReadAllUsers()
+	allUsersInDB, err := datasource.ReadAllUsers()
 	if err != nil {
 		handler.log.Printf("cannot unmarshal: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -67,7 +47,7 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	usersInDBWithNewUser, err := CreateNewUser(allUsersInDB, newUser)
+	usersInDBWithNewUser, err := datasource.CreateNewUser(allUsersInDB, newUser)
 	if err != nil {
 		handler.log.Printf("cannot create new user:, %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -75,7 +55,7 @@ func (handler *HandlerCreateUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	if err := SaveResultIntoFile(usersInDBWithNewUser); err != nil {
+	if err := datasource.SaveResultIntoFile(usersInDBWithNewUser); err != nil {
 		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 

@@ -1,51 +1,11 @@
 package handlers
 
 import (
+	"curse/practice30/datasource"
 	"encoding/json"
 	"io"
 	"net/http"
 )
-
-func DeleteUser(allUsersInDB Users, id int) Users {
-	newArray := Users{}
-
-	//for _, user := range allUsersInDB { - for dumbs
-	for i := 0; i < len(allUsersInDB); i++ {
-		user := allUsersInDB[i]
-
-		if user.ID != id {
-			newArray = append(newArray, user)
-		} else if user.ID == id {
-			continue
-		}
-	}
-
-	return newArray
-}
-
-func DeleteUserFromFriends(allUsersInDB Users, id int) Users {
-	newArrayOfFriends := Users{}
-
-	for i := 0; i < len(allUsersInDB); i++ {
-		user := allUsersInDB[i]
-		arrayOfFriendsOfUser := []int{}
-
-		for j := 0; j < len(user.Friends); j++ {
-			friendID := user.Friends[j]
-
-			if friendID != id {
-				arrayOfFriendsOfUser = append(arrayOfFriendsOfUser, friendID)
-			} else if friendID == id {
-				continue
-			}
-		}
-
-		user.Friends = arrayOfFriendsOfUser
-		newArrayOfFriends = append(newArrayOfFriends, user)
-	}
-
-	return newArrayOfFriends
-}
 
 type HandlerDeleteUser struct {
 	log Logger
@@ -62,7 +22,7 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 		deleteUser *DeleteUserInfo
 	)
 
-	allUsersInDB, err := ReadAllUsers()
+	allUsersInDB, err := datasource.ReadAllUsers()
 	if err != nil {
 		handler.log.Printf("cannot unmarshal: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -85,7 +45,7 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	allFriendsWithoutDeletedUser, err := UserDeletionResult(allUsersInDB, deleteUser.ID)
+	allFriendsWithoutDeletedUser, err := datasource.UserDeletionResult(allUsersInDB, deleteUser.ID)
 	if err != nil {
 		handler.log.Printf("cannot delete user: %v", err)
 		writer.WriteHeader(http.StatusBadRequest)
@@ -93,7 +53,7 @@ func (handler *HandlerDeleteUser) ServeHTTP(writer http.ResponseWriter, request 
 		return
 	}
 
-	if err := SaveResultIntoFile(allFriendsWithoutDeletedUser); err != nil {
+	if err := datasource.SaveResultIntoFile(allFriendsWithoutDeletedUser); err != nil {
 		handler.log.Printf("cannot save: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
