@@ -45,3 +45,14 @@ func Test_Case6(t *testing.T) {
 	assert.Equal(t, expected1, actual1)
 	assert.Equal(t, expected2, actual2)
 }
+
+func Test_Case7(t *testing.T) {
+	array := []int{5, 5, 5, 5, 5}
+
+	expected1 := 20
+	expected2 := 20
+	actual1, actual2 := CalculateMaxAndMin(array)
+
+	assert.Equal(t, expected1, actual1)
+	assert.Equal(t, expected2, actual2)
+}

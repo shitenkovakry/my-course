@@ -32,14 +32,9 @@ func CalculateMaxAndMin(array []int) (int, int) {
 	maxNumber := SearchMax(array)
 
 	for indexOfArray := 0; indexOfArray < len(array); indexOfArray++ {
-		if array[indexOfArray] != maxNumber {
-			summaOfMin += array[indexOfArray]
-		}
-
-		if array[indexOfArray] != minNumber {
-			summaOfMax += array[indexOfArray]
-		}
+		summaOfMin += array[indexOfArray]
+		summaOfMax += array[indexOfArray]
 	}
 
-	return summaOfMin, summaOfMax
+	return summaOfMin - maxNumber, summaOfMax - minNumber
 }
