@@ -18,7 +18,7 @@ func main() {
 	handlerForPlayAsX := handlers.NewHandlerForPlayingX(logger)
 	router.Method(http.MethodPost, "api/v1/mark/x", handlerForPlayAsX)
 
-	handlerForPlayAsO := handlers.NewHandlerForPlayingY(logger)
+	handlerForPlayAsO := handlers.NewHandlerForPlayingO(logger)
 	router.Method(http.MethodPost, "/api/v1/mark/o", handlerForPlayAsO)
 
 	server := &http.Server{
