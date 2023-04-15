@@ -66,6 +66,23 @@ func (handler *HandlerForUpdateUser) prepareRequest(request *http.Request) (*mod
 	return updatedUser, nil
 }
 
+func (handler *HandlerForUpdateUser) sendResponse(write http.ResponseWriter, updatedUser *models.User) {
+	updatedUserMarshaled, err := json.Marshal(updatedUser)
+	if err != nil {
+		handler.log.Printf("can not marshal created user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	if _, err := write.Write(updatedUserMarshaled); err != nil {
+		handler.log.Printf("can not send to client updated user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+}
+
 func (handler *HandlerForUpdateUser) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	shouldUpdateUser, err := handler.prepareRequest(request)
 	if err != nil {
@@ -83,18 +100,6 @@ func (handler *HandlerForUpdateUser) ServeHTTP(write http.ResponseWriter, reques
 		return
 	}
 
-	updatedUserMarshaled, err := json.Marshal(updatedUser)
-	if err != nil {
-		handler.log.Printf("can not marshal created user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
+	handler.sendResponse(write, updatedUser)
 
-		return
-	}
-
-	if _, err := write.Write(updatedUserMarshaled); err != nil {
-		handler.log.Printf("can not send to client updated user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
 }
