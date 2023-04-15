@@ -59,6 +59,23 @@ func (handler *HandlerForCreateUser) prepareRequest(request *http.Request) (*mod
 	return newUser, nil
 }
 
+func (handler *HandlerForCreateUser) sendResponse(write http.ResponseWriter, createdUser *models.User) {
+	createdUserMarshaled, err := json.Marshal(createdUser)
+	if err != nil {
+		handler.log.Printf("cannot marshal created user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	if _, err := write.Write(createdUserMarshaled); err != nil {
+		handler.log.Printf("cannot send to client created user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+}
+
 func (handler *HandlerForCreateUser) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	newUser, err := handler.prepareRequest(request)
 	if err != nil {
@@ -76,18 +93,5 @@ func (handler *HandlerForCreateUser) ServeHTTP(write http.ResponseWriter, reques
 		return
 	}
 
-	createdUserMarshaled, err := json.Marshal(createdUser)
-	if err != nil {
-		handler.log.Printf("cannot marshal created user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if _, err := write.Write(createdUserMarshaled); err != nil {
-		handler.log.Printf("cannot send to client created user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
+	handler.sendResponse(write, createdUser)
 }
