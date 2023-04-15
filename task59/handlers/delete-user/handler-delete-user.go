@@ -1,6 +1,7 @@
 package deleteuser
 
 import (
+	"curse/task59/logger"
 	"curse/task59/models"
 )
 
@@ -13,4 +14,9 @@ type DeleteUser struct {
 
 type UserActionsForHandlerDeleteUser interface {
 	Delete(userID int) (*models.Users, error)
+}
+
+type HandlerForDeleteUser struct {
+	log         logger.Logger
+	userActions UserActionsForHandlerDeleteUser
 }
