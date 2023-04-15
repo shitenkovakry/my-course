@@ -52,14 +52,27 @@ func (registration *Registration) UpdateAgeOfUser(userID int, age int) (*models.
 
 func (registration *Registration) Delete(userID int) (*models.User, error) {
 	allUsersInDB := registration.allUsersInDB
+	newArray := models.Users{}
+
+	var deletedUser *models.User
 
 	//for _, user := range allUsersInDB { - for dumbs
 	for i := 0; i < len(allUsersInDB); i++ {
 		user := allUsersInDB[i]
 
 		if user.ID == userID {
-			return user, nil
+			deletedUser = user
+
+			continue
 		}
+
+		newArray = append(newArray, user)
+	}
+
+	registration.allUsersInDB = newArray
+
+	if deletedUser != nil {
+		return deletedUser, nil
 	}
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this person = %s")
