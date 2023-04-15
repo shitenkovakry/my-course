@@ -6,14 +6,11 @@ import (
 )
 
 type DeleteUser struct {
-	Email   string `json:"email"`
-	Name    string `json:"name"`
-	Age     int    `json:"age"`
-	Friends []int  `json:"friends"`
+	ID string `json:""target_id"`
 }
 
 type UserActionsForHandlerDeleteUser interface {
-	Delete(userID int) (*models.Users, error)
+	Delete(userID int) (*models.User, error)
 }
 
 type HandlerForDeleteUser struct {
