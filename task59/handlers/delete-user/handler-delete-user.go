@@ -65,6 +65,23 @@ func (handler *HandlerForDeleteUser) prepareRequest(request *http.Request) (*mod
 	return deletedUser, nil
 }
 
+func (handler *HandlerForDeleteUser) sendResponse(write http.ResponseWriter, deletedUser *models.User) {
+	deletedUserMarshaled, err := json.Marshal(deletedUser)
+	if err != nil {
+		handler.log.Printf("can not marshal deleted user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	if _, err := write.Write(deletedUserMarshaled); err != nil {
+		handler.log.Printf("can not send to client deleted user: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+}
+
 func (handler *HandlerForDeleteUser) ServeHTTP(write http.ResponseWriter, request *http.Request) {
 	shouldDeleteUser, err := handler.prepareRequest(request)
 	if err != nil {
@@ -82,18 +99,5 @@ func (handler *HandlerForDeleteUser) ServeHTTP(write http.ResponseWriter, reques
 		return
 	}
 
-	deletedUserMarshaled, err := json.Marshal(deletedUser)
-	if err != nil {
-		handler.log.Printf("can not marshal deleted user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	if _, err := write.Write(deletedUserMarshaled); err != nil {
-		handler.log.Printf("can not send to client deleted user: %v", err)
-		write.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
+	handler.sendResponse(write, deletedUser)
 }
