@@ -50,6 +50,21 @@ func (registration *Registration) UpdateAgeOfUser(userID int, age int) (*models.
 	return nil, errors.Wrapf(ErrNotFound, "can not find this person = %s")
 }
 
+func (registration *Registration) Delete(userID int) (*models.User, error) {
+	allUsersInDB := registration.allUsersInDB
+
+	//for _, user := range allUsersInDB { - for dumbs
+	for i := 0; i < len(allUsersInDB); i++ {
+		user := allUsersInDB[i]
+
+		if user.ID == userID {
+			return user, nil
+		}
+	}
+
+	return nil, errors.Wrapf(ErrNotFound, "can not find this person = %s")
+}
+
 func New() *Registration {
 	return &Registration{
 		allUsersInDB: models.Users{},
