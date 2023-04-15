@@ -18,3 +18,12 @@ type HandlerForMakeFriendForUsers struct {
 	log         logger.Logger
 	userActions UserActionsForHandlerMakeFriendForUsers
 }
+
+func NewHandlerForMakeFriend(log logger.Logger, userActions UserActionsForHandlerMakeFriendForUsers) *HandlerForMakeFriendForUsers {
+	result := &HandlerForMakeFriendForUsers{
+		log:         log,
+		userActions: userActions,
+	}
+
+	return result
+}
