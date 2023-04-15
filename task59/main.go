@@ -4,7 +4,7 @@ import (
 	"curse/task59/datasource/users"
 	handler_create_user "curse/task59/handlers/create-user"
 
-	//handler_delete_user "curse/task59/handlers/delete-user"
+	handler_delete_user "curse/task59/handlers/delete-user"
 	handler_update_user "curse/task59/handlers/update-user"
 	"curse/task59/logger"
 	"net/http"
@@ -27,8 +27,8 @@ func main() {
 	handlerUpdateUserByAge := handler_update_user.NewHandlerForUpdateUserByAge(log, users)
 	router.Method(http.MethodPut, "/{user_id}", handlerUpdateUserByAge)
 
-	//handlerDeleteUser := handler_delete_user.NewHandlerForDeleteUser(log, users)
-	//router.Method(http.MethodDelete, "/user", handlerDeleteUser)
+	handlerDeleteUser := handler_delete_user.NewHandlerForDeleteUser(log, users)
+	router.Method(http.MethodDelete, "/user", handlerDeleteUser)
 
 	server := NewServer(addr, router)
 
