@@ -20,3 +20,12 @@ type HandlerForDeleteUser struct {
 	log         logger.Logger
 	userActions UserActionsForHandlerDeleteUser
 }
+
+func NewHandlerForDeleteUser(log logger.Logger, userActions UserActionsForHandlerDeleteUser) *HandlerForDeleteUser {
+	result := &HandlerForDeleteUser{
+		log:         log,
+		userActions: userActions,
+	}
+
+	return result
+}
