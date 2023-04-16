@@ -3,6 +3,9 @@ package makefriend
 import (
 	"curse/task59/logger"
 	"curse/task59/models"
+	"encoding/json"
+	"io"
+	"net/http"
 )
 
 type MakeFriend struct {
@@ -26,4 +29,23 @@ func NewHandlerForMakeFriend(log logger.Logger, userActions UserActionsForHandle
 	}
 
 	return result
+}
+
+func (handler *HandlerForMakeFriendForUsers) prepareRequest(request *http.Request) (*MakeFriend, error) {
+	body, err := io.ReadAll(request.Body)
+	if err != nil {
+		handler.log.Printf("cannot read body: %v", err)
+
+		return nil, err
+	}
+
+	var makeFriendFromClient *MakeFriend
+
+	if err := json.Unmarshal(body, &makeFriendFromClient); err != nil {
+		handler.log.Printf("cannot unmarshal body=%s: %v", string(body), err)
+
+		return nil, err
+	}
+
+	return makeFriendFromClient, nil
 }
