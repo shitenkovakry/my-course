@@ -2,6 +2,7 @@ package users
 
 import (
 	"curse/task59/models"
+	"fmt"
 
 	"github.com/pkg/errors"
 )
@@ -92,21 +93,21 @@ func (registretion *Registration) FindUserByID(id int) (*models.User, error) {
 	return nil, ErrNotFound
 }
 
-func (registration *Registration) MakeFriend(sourceID, targetID int) (*models.User, *models.User, error) {
+func (registration *Registration) MakeFriend(sourceID, targetID int) (string, error) {
 	sourceUser, err := registration.FindUserByID(sourceID)
 	if err != nil {
-		return nil, nil, err
+		return "", err
 	}
 
 	targetUser, err := registration.FindUserByID(targetID)
 	if err != nil {
-		return nil, nil, err
+		return "", err
 	}
 
 	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
 	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
 
-	return sourceUser, targetUser, nil
+	return fmt.Sprintf("%s and %s are friends", sourceUser.Name, targetUser.Name), nil
 }
 
 func New() *Registration {

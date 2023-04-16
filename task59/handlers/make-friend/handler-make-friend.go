@@ -2,7 +2,6 @@ package makefriend
 
 import (
 	"curse/task59/logger"
-	"curse/task59/models"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -14,7 +13,7 @@ type MakeFriend struct {
 }
 
 type UserActionsForHandlerMakeFriendForUsers interface {
-	MakeFriend(sourceID, targetID int) (*models.User, *models.User, error)
+	MakeFriend(sourceID, targetID int) (string, error)
 }
 
 type HandlerForMakeFriendForUsers struct {
@@ -48,4 +47,29 @@ func (handler *HandlerForMakeFriendForUsers) prepareRequest(request *http.Reques
 	}
 
 	return makeFriendFromClient, nil
+}
+
+func (handler *HandlerForMakeFriendForUsers) ServeHTTP(write http.ResponseWriter, request *http.Request) {
+	shouldMakeFriend, err := handler.prepareRequest(request)
+	if err != nil {
+		handler.log.Printf("can not prepare request: %v", err)
+		write.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	status, err := handler.userActions.MakeFriend(shouldMakeFriend.SourceID, shouldMakeFriend.TargetID)
+	if err != nil {
+		handler.log.Printf("can not make friends: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	if _, err := write.Write([]byte(status)); err != nil {
+		handler.log.Printf("can not write: %v", err)
+		write.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
 }
