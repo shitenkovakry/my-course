@@ -78,6 +78,37 @@ func (registration *Registration) Delete(userID int) (*models.User, error) {
 	return nil, errors.Wrapf(ErrNotFound, "can not find this person = %s")
 }
 
+func (registretion *Registration) FindUserByID(id int) (*models.User, error) {
+	allUsersInDB := registretion.allUsersInDB
+
+	for index := 0; index <= len(allUsersInDB); index++ {
+		user := allUsersInDB[index]
+
+		if user.ID == id {
+			return user, nil
+		}
+	}
+
+	return nil, ErrNotFound
+}
+
+func (registration *Registration) MakeFriend(sourceID, targetID int) (*models.User, *models.User, error) {
+	sourceUser, err := registration.FindUserByID(sourceID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	targetUser, err := registration.FindUserByID(targetID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	sourceUser.Friends = append(sourceUser.Friends, targetUser.ID)
+	targetUser.Friends = append(targetUser.Friends, sourceUser.ID)
+
+	return sourceUser, targetUser, nil
+}
+
 func New() *Registration {
 	return &Registration{
 		allUsersInDB: models.Users{},
