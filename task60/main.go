@@ -97,3 +97,19 @@ func (dispatcher *Dispatcher) UpdateTelephone(orderID int, telephone string) (*O
 func (dispatcher *Dispatcher) ReadOrders() (Orders, error) {
 	return dispatcher.orders, nil
 }
+
+func (dispatcher *Dispatcher) UpdateStatus(orderID int, status string) (*Order, error) {
+	allOrdersInDB := dispatcher.orders
+
+	for index := 0; index < len(allOrdersInDB); index++ {
+		order := allOrdersInDB[index]
+
+		if orderID == order.ID {
+			order.Status = status
+		}
+
+		return order, nil
+	}
+
+	return nil, errors.Wrapf(ErrNotFound, "can not find this status = %s")
+}
