@@ -93,3 +93,7 @@ func (dispatcher *Dispatcher) UpdateTelephone(orderID int, telephone string) (*O
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
 }
+
+func (dispatcher *Dispatcher) ReadOrders() (Orders, error) {
+	return dispatcher.orders, nil
+}
