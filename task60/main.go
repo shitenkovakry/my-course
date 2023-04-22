@@ -77,3 +77,19 @@ func (dispatcher *Dispatcher) UpdateAddress(orderID int, address string) (*Order
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
 }
+
+func (dispatcher *Dispatcher) UpdateTelephone(orderID int, telephone string) (*Order, error) {
+	allOrdersInDB := dispatcher.orders
+
+	for index := 0; index < len(allOrdersInDB); index++ {
+		order := allOrdersInDB[index]
+
+		if orderID == order.ID {
+			order.Telephone = telephone
+		}
+
+		return order, nil
+	}
+
+	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
+}
