@@ -79,7 +79,7 @@ func (registration *Registration) Delete(userID int) (*models.User, error) {
 	return nil, errors.Wrapf(ErrNotFound, "can not find this person = %s")
 }
 
-func (registretion *Registration) FindUserByID(id int) (*models.User, error) {
+func (registretion *Registration) findUserByID(id int) (*models.User, error) {
 	allUsersInDB := registretion.allUsersInDB
 
 	for index := 0; index <= len(allUsersInDB); index++ {
@@ -94,12 +94,12 @@ func (registretion *Registration) FindUserByID(id int) (*models.User, error) {
 }
 
 func (registration *Registration) MakeFriend(sourceID, targetID int) (string, error) {
-	sourceUser, err := registration.FindUserByID(sourceID)
+	sourceUser, err := registration.findUserByID(sourceID)
 	if err != nil {
 		return "", err
 	}
 
-	targetUser, err := registration.FindUserByID(targetID)
+	targetUser, err := registration.findUserByID(targetID)
 	if err != nil {
 		return "", err
 	}
