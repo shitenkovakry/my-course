@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	ErrAlready = errors.New("already")
+	ErrAlready  = errors.New("already")
+	ErrNotFound = errors.New("not found")
 )
 
 type Order struct {
@@ -59,4 +60,20 @@ func (dispatcher *Dispatcher) CreateOrder(newOrder *Order) (*Order, error) {
 	dispatcher.orders = append(dispatcher.orders, newOrder)
 
 	return newOrder, nil
+}
+
+func (dispatcher *Dispatcher) UpdateAddress(orderID int, address string) (*Order, error) {
+	allOrdersInDB := dispatcher.orders
+
+	for index := 0; index < len(allOrdersInDB); index++ {
+		order := allOrdersInDB[index]
+
+		if orderID == order.ID {
+			order.Address = address
+		}
+
+		return order, nil
+	}
+
+	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
 }
