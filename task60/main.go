@@ -70,9 +70,9 @@ func (dispatcher *Dispatcher) UpdateAddress(orderID int, address string) (*Order
 
 		if orderID == order.ID {
 			order.Address = address
-		}
 
-		return order, nil
+			return order, nil
+		}
 	}
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
@@ -86,9 +86,9 @@ func (dispatcher *Dispatcher) UpdateTelephone(orderID int, telephone string) (*O
 
 		if orderID == order.ID {
 			order.Telephone = telephone
-		}
 
-		return order, nil
+			return order, nil
+		}
 	}
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this order = %s")
@@ -106,9 +106,9 @@ func (dispatcher *Dispatcher) UpdateStatus(orderID int, status string) (*Order, 
 
 		if orderID == order.ID {
 			order.Status = status
-		}
 
-		return order, nil
+			return order, nil
+		}
 	}
 
 	return nil, errors.Wrapf(ErrNotFound, "can not find this status = %s")
