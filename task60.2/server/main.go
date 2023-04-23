@@ -4,6 +4,7 @@ import (
 	"curse/task60.2/datasource/dispatcher"
 	handler_create "curse/task60.2/handlers/order/create"
 	handler_read_all_orders "curse/task60.2/handlers/order/read-all"
+	handler_update_address "curse/task60.2/handlers/order/update-address"
 	"curse/task60.2/logger"
 	"net/http"
 
@@ -36,6 +37,7 @@ func main() {
 				POST /api/v1/orders/update_address
 				body:
 				{
+					"id": 5,
 					"address": "new address"
 				}
 
@@ -46,6 +48,7 @@ func main() {
 				POST /api/v1/orders/update_status
 				body:
 				{
+					"id": 5,
 					"status": "in-route" | "delivered" | "canceled"
 				}
 
@@ -56,6 +59,7 @@ func main() {
 				POST /api/v1/orders/update_telephone
 				body:
 				{
+					"id": 5,
 					"telephone": "+375 new phone"
 				}
 
@@ -94,6 +98,9 @@ func main() {
 
 	handlerReadOrders := handler_read_all_orders.NewHandlerForReadOrder(log, dispatcher)
 	router.Method(http.MethodGet, "/api/v1/orders", handlerReadOrders)
+
+	handlerUpdateAddress := handler_update_address.NewHandlerForUpdateAddress(log, dispatcher)
+	router.Method(http.MethodGet, "/api/v1/orders/update_address", handlerUpdateAddress)
 
 	server := NewServer(addr, router)
 
