@@ -6,6 +6,7 @@ import (
 	handler_read_all_orders "curse/task60.2/handlers/order/read-all"
 	handler_update_address "curse/task60.2/handlers/order/update-address"
 	handler_update_status "curse/task60.2/handlers/order/update-status"
+	handler_update_telephone "curse/task60.2/handlers/order/update-telephone"
 	"curse/task60.2/logger"
 	"net/http"
 
@@ -105,6 +106,9 @@ func main() {
 
 	handlerUpdateStatus := handler_update_status.NewHandlerForUpdateStatus(log, dispatcher)
 	router.Method(http.MethodGet, "/api/v1/orders/update_status", handlerUpdateStatus)
+
+	handlerUpdateTelephone := handler_update_telephone.NewHandlerForUpdateTelephone(log, dispatcher)
+	router.Method(http.MethodGet, "/api/v1/orders/update_telephone", handlerUpdateTelephone)
 
 	server := NewServer(addr, router)
 
