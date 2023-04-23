@@ -83,7 +83,7 @@ func (handler *HandlerForUpdateAddress) ServeHTTP(writer http.ResponseWriter, re
 
 	updatedAddress, err := handler.orderActions.UpdateAddress(shouldUpdateAddress.ID, shouldUpdateAddress.Address)
 	if err != nil {
-		handler.log.Printf("cannot create order: %v", err)
+		handler.log.Printf("cannot update address: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 
 		return
