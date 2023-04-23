@@ -3,6 +3,7 @@ package main
 import (
 	"curse/task60.2/datasource/dispatcher"
 	handler_create "curse/task60.2/handlers/order/create"
+	handler_read_all_orders "curse/task60.2/handlers/order/read-all"
 	"curse/task60.2/logger"
 	"net/http"
 
@@ -90,6 +91,9 @@ func main() {
 
 	handlerCreateOrder := handler_create.NewHandlerForCreateOrder(log, dispatcher)
 	router.Method(http.MethodPost, "/api/v1/orders/create", handlerCreateOrder)
+
+	handlerReadOrders := handler_read_all_orders.NewHandlerForReadOrder(log, dispatcher)
+	router.Method(http.MethodGet, "/api/v1/orders", handlerReadOrders)
 
 	server := NewServer(addr, router)
 
