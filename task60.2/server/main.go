@@ -88,6 +88,20 @@ func main() {
 				]
 
 		--------------
+
+		curl -i -X POST --data-binary '{"address": "second order","telephone": "+375 whatever"}' \
+			http://localhost:8080/api/v1/orders/create
+
+		curl -i -X POST --data-binary '{"id":2,"telephone":"my-telephone"}' \
+			http://localhost:8080/api/v1/orders/update_telephone
+
+		curl -i -X POST --data-binary '{"id":2,"status":"in-route"}' \
+			http://localhost:8080/api/v1/orders/update_status
+
+		curl -i -X POST --data-binary '{"id":2,"address":"my address"}' \
+			http://localhost:8080/api/v1/orders/update_address
+
+		curl -i -X GET http://localhost:8080/api/v1/orders
 	*/
 
 	router := chi.NewRouter()
@@ -102,13 +116,13 @@ func main() {
 	router.Method(http.MethodGet, "/api/v1/orders", handlerReadOrders)
 
 	handlerUpdateAddress := handler_update_address.NewHandlerForUpdateAddress(log, dispatcher)
-	router.Method(http.MethodGet, "/api/v1/orders/update_address", handlerUpdateAddress)
+	router.Method(http.MethodPost, "/api/v1/orders/update_address", handlerUpdateAddress)
 
 	handlerUpdateStatus := handler_update_status.NewHandlerForUpdateStatus(log, dispatcher)
-	router.Method(http.MethodGet, "/api/v1/orders/update_status", handlerUpdateStatus)
+	router.Method(http.MethodPost, "/api/v1/orders/update_status", handlerUpdateStatus)
 
 	handlerUpdateTelephone := handler_update_telephone.NewHandlerForUpdateTelephone(log, dispatcher)
-	router.Method(http.MethodGet, "/api/v1/orders/update_telephone", handlerUpdateTelephone)
+	router.Method(http.MethodPost, "/api/v1/orders/update_telephone", handlerUpdateTelephone)
 
 	server := NewServer(addr, router)
 

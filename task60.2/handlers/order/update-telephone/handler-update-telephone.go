@@ -10,7 +10,7 @@ import (
 
 type UpdateTelephone struct {
 	ID        int    `json:"id"`
-	Telephone string `json:"status"`
+	Telephone string `json:"telephone"`
 }
 
 type OrderActionsForHandlerUpdateTelephone interface {
@@ -48,8 +48,8 @@ func (handler *HandlerForUpdateTelephone) prepareRequest(request *http.Request) 
 	}
 
 	newTelephone := &models.Order{
-		ID:     newTelephoneFromClient.ID,
-		Status: newTelephoneFromClient.Telephone,
+		ID:        newTelephoneFromClient.ID,
+		Telephone: newTelephoneFromClient.Telephone,
 	}
 
 	return newTelephone, nil
