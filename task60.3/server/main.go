@@ -2,6 +2,7 @@ package main
 
 import (
 	"curse/task60.3/datasource/dispatcher"
+	"curse/task60.3/datasource/mongo"
 	handler_create "curse/task60.3/handlers/order/create"
 	handler_read_all_orders "curse/task60.3/handlers/order/read-all"
 	handler_update_address "curse/task60.3/handlers/order/update-address"
@@ -98,7 +99,7 @@ func main() {
 		curl -i -X POST --data-binary '{"id":2,"status":"in-route"}' \
 			http://localhost:8080/api/v1/orders/update_status
 
-		curl -i -X POST --data-binary '{"id":2,"address":"my address"}' \
+		curl -i -X POST --data-binary '{"id":2,"address":"KRY tam zhiviet"}' \
 			http://localhost:8080/api/v1/orders/update_address
 
 		curl -i -X GET http://localhost:8080/api/v1/orders
@@ -107,7 +108,8 @@ func main() {
 	router := chi.NewRouter()
 	log := logger.New()
 
-	dispatcher := dispatcher.NewDispatcher(log)
+	moooong := mongo.New(log, "", "", []string{"localhost:27017"}, "my-database")
+	dispatcher := dispatcher.NewDispatcher(log, moooong)
 
 	handlerCreateOrder := handler_create.NewHandlerForCreateOrder(log, dispatcher)
 	router.Method(http.MethodPost, "/api/v1/orders/create", handlerCreateOrder)
