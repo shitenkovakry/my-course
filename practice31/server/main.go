@@ -6,6 +6,7 @@ import (
 	"curse/practice31/datasource/mongo"
 	"curse/practice31/datasource/users"
 	handler_create "curse/practice31/handlers/user/create"
+	handler_delete "curse/practice31/handlers/user/delete"
 	handler_update_user "curse/practice31/handlers/user/update-user"
 	"curse/practice31/logger"
 
@@ -25,6 +26,9 @@ func main() {
 
 	handlerForUpdateUserByAge := handler_update_user.NewHandlerForUpdateUserByAge(log, usersManager)
 	router.Method(http.MethodPut, "/{user_id}", handlerForUpdateUserByAge)
+
+	handlerForDeleteUser := handler_delete.NewHandlerForDeleteUser(log, usersManager)
+	router.Method(http.MethodDelete, "/user", handlerForDeleteUser)
 
 	server := NewServer(addr, router)
 

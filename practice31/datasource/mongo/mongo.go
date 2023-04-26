@@ -57,7 +57,12 @@ func (users *UsersManager) findUserByFilter(filter *bson.M) (*models.User, error
 	collectionUsers := users.db.Collection(usersCollection)
 	result := collectionUsers.FindOne(context.Background(), filter)
 
-	if err := result.Err(); err != nil {
+	err := result.Err()
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, models.ErrNoDocuments
+	}
+
+	if err != nil {
 		return nil, errors.Wrap(err, "can not find by ID")
 	}
 
@@ -121,6 +126,25 @@ func (mongo *UsersManager) UpdateAge(id int, age int) (*models.User, error) {
 	}
 
 	return updatedUser, nil
+}
+
+func (mongo *UsersManager) DeleteUser(id int) (*models.User, error) {
+	collectionUsers := mongo.db.Collection(usersCollection)
+
+	filter := &bson.M{
+		"id": id,
+	}
+
+	deletedUser, err := mongo.findUserByFilter(filter)
+	if err != nil {
+		return nil, errors.Wrap(err, "can not find deleted user")
+	}
+
+	if _, err := collectionUsers.DeleteOne(context.Background(), filter); err != nil {
+		return nil, errors.Wrap(err, "can not delete user")
+	}
+
+	return deletedUser, nil
 }
 
 func New(log logger.Logger, username, password string, dbHosts []string, database string) *UsersManager {

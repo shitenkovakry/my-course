@@ -1,5 +1,11 @@
 package models
 
+import "errors"
+
+var (
+	ErrNoDocuments = errors.New("no documents")
+)
+
 type User struct {
 	ID        int    `bson:"id"`
 	Email     string `bson:"email"`
