@@ -1,11 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"curse/practice31/datasource/mongo"
 	"curse/practice31/datasource/users"
 	handler_create "curse/practice31/handlers/user/create"
+	handler_update_user "curse/practice31/handlers/user/update-user"
 	"curse/practice31/logger"
-	"net/http"
 
 	"github.com/go-chi/chi"
 )
@@ -20,6 +22,9 @@ func main() {
 
 	handlerForCreateUser := handler_create.NewHandlerForCreateUser(log, usersManager)
 	router.Method(http.MethodPost, "/create", handlerForCreateUser)
+
+	handlerForUpdateUserByAge := handler_update_user.NewHandlerForUpdateUserByAge(log, usersManager)
+	router.Method(http.MethodPut, "/{user_id}", handlerForUpdateUserByAge)
 
 	server := NewServer(addr, router)
 

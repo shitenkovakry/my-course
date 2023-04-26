@@ -14,6 +14,7 @@ var (
 
 type DB interface {
 	Insert(user *models.User) (*models.User, error)
+	UpdateAge(id int, age int) (*models.User, error)
 }
 
 type Registration struct {
@@ -35,4 +36,13 @@ func (registration *Registration) Create(newUser *models.User) (*models.User, er
 	}
 
 	return insertedUser, nil
+}
+
+func (registration *Registration) UpdateAge(userID int, age int) (*models.User, error) {
+	updatedAge, err := registration.db.UpdateAge(userID, age)
+	if err != nil {
+		return nil, errors.Wrap(err, "can not update user")
+	}
+
+	return updatedAge, nil
 }

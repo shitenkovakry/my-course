@@ -70,7 +70,7 @@ func (users *UsersManager) findUserByFilter(filter *bson.M) (*models.User, error
 }
 
 func (users *UsersManager) Insert(user *models.User) (*models.User, error) {
-	collectionOrders := users.db.Collection(usersCollection)
+	collectionUsers := users.db.Collection(usersCollection)
 
 	nextID, err := users.obtainNextID()
 	if err != nil {
@@ -80,7 +80,7 @@ func (users *UsersManager) Insert(user *models.User) (*models.User, error) {
 	user.ID = nextID
 	opts := options.InsertOne()
 
-	result, err := collectionOrders.InsertOne(context.Background(), user, opts)
+	result, err := collectionUsers.InsertOne(context.Background(), user, opts)
 	if err != nil {
 		return nil, errors.Wrap(err, "can not insert user")
 	}
@@ -95,6 +95,32 @@ func (users *UsersManager) Insert(user *models.User) (*models.User, error) {
 	}
 
 	return insertedUser, nil
+}
+
+func (mongo *UsersManager) UpdateAge(id int, age int) (*models.User, error) {
+	collectionUsers := mongo.db.Collection(usersCollection)
+
+	filter := &bson.M{
+		"id": id,
+	}
+
+	upd := &bson.M{
+		"$set": &bson.M{
+			"age": age,
+		},
+	}
+
+	_, err := collectionUsers.UpdateOne(context.Background(), filter, upd)
+	if err != nil {
+		return nil, errors.Wrap(err, "can not update age by user")
+	}
+
+	updatedUser, err := mongo.findUserByFilter(filter)
+	if err != nil {
+		return nil, errors.Wrap(err, "can not find updated by age user")
+	}
+
+	return updatedUser, nil
 }
 
 func New(log logger.Logger, username, password string, dbHosts []string, database string) *UsersManager {
