@@ -3,6 +3,7 @@ package users
 import (
 	"curse/practice31/logger"
 	"curse/practice31/models"
+	"fmt"
 
 	"github.com/pkg/errors"
 )
@@ -16,6 +17,7 @@ type DB interface {
 	Insert(user *models.User) (*models.User, error)
 	UpdateAge(id int, age int) (*models.User, error)
 	DeleteUser(id int) (*models.User, error)
+	MakeFriend(sourceID, targetID int) (*models.User, *models.User, error)
 }
 
 type Registration struct {
@@ -55,4 +57,13 @@ func (registration *Registration) Delete(userID int) (*models.User, error) {
 	}
 
 	return deletedUser, nil
+}
+
+func (registration *Registration) MakeFriend(sourceID, targetID int) (string, error) {
+	sourceUser, targetUser, err := registration.db.MakeFriend(sourceID, targetID)
+	if err != nil {
+		return "", errors.Wrap(err, "can not make friend")
+	}
+
+	return fmt.Sprintf("%s and %s are friends", sourceUser.Name, targetUser.Name), nil
 }

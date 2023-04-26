@@ -83,6 +83,10 @@ func (users *UsersManager) Insert(user *models.User) (*models.User, error) {
 	}
 
 	user.ID = nextID
+	if user.Friends == nil {
+		user.Friends = make([]int, 0)
+	}
+
 	opts := options.InsertOne()
 
 	result, err := collectionUsers.InsertOne(context.Background(), user, opts)
@@ -145,6 +149,50 @@ func (mongo *UsersManager) DeleteUser(id int) (*models.User, error) {
 	}
 
 	return deletedUser, nil
+}
+
+func (mongo *UsersManager) addFriendToUser(userID, targetID int) error {
+	collectionUsers := mongo.db.Collection(usersCollection)
+
+	// define the filter to find the document
+	filter := &bson.M{"id": userID}
+
+	// define the update to append a value to the friends array without duplicates
+	update := bson.M{
+		"$addToSet": bson.M{"friends": targetID},
+	}
+
+	opts := options.Update().SetUpsert(true)
+
+	// update the document
+	_, err := collectionUsers.UpdateOne(context.Background(), filter, update, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
+}
+
+func (mongo *UsersManager) MakeFriend(sourceID, targetID int) (*models.User, *models.User, error) {
+	if err := mongo.addFriendToUser(sourceID, targetID); err != nil {
+		return nil, nil, err
+	}
+
+	if err := mongo.addFriendToUser(targetID, sourceID); err != nil {
+		return nil, nil, err
+	}
+
+	sourceUser, err := mongo.findUserByFilter(&bson.M{"id": sourceID})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	targetUser, err := mongo.findUserByFilter(&bson.M{"id": targetID})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return sourceUser, targetUser, nil
 }
 
 func New(log logger.Logger, username, password string, dbHosts []string, database string) *UsersManager {

@@ -7,6 +7,7 @@ import (
 	"curse/practice31/datasource/users"
 	handler_create "curse/practice31/handlers/user/create"
 	handler_delete "curse/practice31/handlers/user/delete"
+	handler_make_friend "curse/practice31/handlers/user/make-friend"
 	handler_update_user "curse/practice31/handlers/user/update-user"
 	"curse/practice31/logger"
 
@@ -29,6 +30,9 @@ func main() {
 
 	handlerForDeleteUser := handler_delete.NewHandlerForDeleteUser(log, usersManager)
 	router.Method(http.MethodDelete, "/user", handlerForDeleteUser)
+
+	handlerForMakeFriend := handler_make_friend.NewHandlerForMakeFriend(log, usersManager)
+	router.Method(http.MethodPost, "/make_friends", handlerForMakeFriend)
 
 	server := NewServer(addr, router)
 
