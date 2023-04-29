@@ -1,7 +1,11 @@
 package main
 
 import (
+	"context"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"curse/practice31/datasource/mongo"
 	"curse/practice31/datasource/users"
@@ -14,12 +18,14 @@ import (
 	"github.com/go-chi/chi"
 )
 
-const addr = ":8080"
+const (
+	addr = ":8080"
+)
 
 func main() {
 	router := chi.NewRouter()
 	log := logger.New()
-	mongoDB := mongo.New(log, "", "", []string{"localhost:27017"}, "my-database")
+	mongoDB := mongo.New(log, "", "", []string{"mongodb:27017"}, "my-database")
 	usersManager := users.New(log, mongoDB)
 
 	handlerForCreateUser := handler_create.NewHandlerForCreateUser(log, usersManager)
@@ -38,8 +44,23 @@ func main() {
 
 	log.Printf("Serving at [%s]", addr)
 
-	if err := server.ListenAndServe(); err != nil {
-		panic(err)
+	stopChan := make(chan os.Signal, 1)
+	signal.Notify(stopChan, os.Interrupt)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server is error: %v", err)
+		}
+	}()
+
+	<-stopChan
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// завершение работы серверов
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("server1 shutdown error: %v", err)
 	}
 }
 

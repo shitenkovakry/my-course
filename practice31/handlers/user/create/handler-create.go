@@ -83,6 +83,8 @@ func (handler *HandlerForCreateUser) sendResponse(write http.ResponseWriter, cre
 }
 
 func (handler *HandlerForCreateUser) ServeHTTP(write http.ResponseWriter, request *http.Request) {
+	handler.log.Printf("create request hit")
+
 	newUser, err := handler.prepareRequest(request)
 	if err != nil {
 		handler.log.Printf("cannot prepare request: %v", err)

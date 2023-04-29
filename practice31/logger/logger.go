@@ -10,5 +10,5 @@ type Logger interface {
 }
 
 func New() *log.Logger {
-	return log.New(os.Stdout, "task60.3", log.Flags())
+	return log.New(os.Stdout, "practice-31", log.Flags())
 }
